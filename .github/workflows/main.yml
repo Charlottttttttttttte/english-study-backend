@@ -4,7 +4,6 @@ on:
   push:
     branches: [ main ]
 
-# 添加权限
 permissions:
   contents: write
   pages: write
@@ -16,16 +15,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          
+
       - name: Install dependencies
         run: npm ci
-        
-            - name: Build
+
+      - name: Build
         run: npm run build
 
       - name: Copy images to dist
