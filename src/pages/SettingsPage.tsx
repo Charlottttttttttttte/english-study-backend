@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Headphones, FileText, Edit3, Check, X } from 'lucide-react';
+import { ArrowLeft, Headphones, FileText, Edit3, Check, X, Upload, Loader2 } from 'lucide-react';
 import { supabase } from '../api/client';
 import type { StudyMaterial } from '../types';
 
@@ -13,6 +13,9 @@ export default function SettingsPage() {
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
   const [, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const loadMaterials = useCallback(async () => {
     try {
@@ -46,6 +49,55 @@ export default function SettingsPage() {
     setEditingIndex(null);
     setEditForm(null);
   }, []);
+
+  const uploadAudioFile = useCallback(async (file: File) => {
+    if (!file || !editForm) return;
+    setUploading(true);
+    setError('');
+    try {
+      const ext = file.name.split('.').pop() || 'mp3';
+      const fileName = `audio-${Date.now()}.${ext}`;
+      const bucketName = 'audio-files';
+      
+      const { error: uploadError } = await supabase.storage
+        .from(bucketName)
+        .upload(fileName, file, { upsert: true });
+      
+      if (uploadError) throw uploadError;
+      
+      const { data: { publicUrl } } = supabase.storage
+        .from(bucketName)
+        .getPublicUrl(fileName);
+      
+      setEditForm({ ...editForm, audioSrc: publicUrl });
+      setSaved(false);
+    } catch (err: any) {
+      setError('上传失败: ' + err.message);
+    } finally {
+      setUploading(false);
+    }
+  }, [editForm]);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('audio/')) {
+      uploadAudioFile(file);
+    } else {
+      setError('请上传音频文件（mp3/wav 等）');
+    }
+  }, [uploadAudioFile]);
 
   const saveEdit = useCallback(async () => {
     if (!editForm || editingIndex === null) return;
@@ -99,7 +151,26 @@ export default function SettingsPage() {
                     <button onClick={cancelEdit} className="p-1.5 rounded-full bg-red-500/20 text-red-400 hover:bg-red-500/30"><X size={16} /></button>
                   </div>
                 </div>
-                <div><label className="text-white/70 text-xs font-body mb-1 block">音频链接</label><input type="text" value={editForm.audioSrc} onChange={(e) => setEditForm({ ...editForm, audioSrc: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white/90 font-body text-xs" /></div>
+                <div>
+                  <label className="text-white/70 text-xs font-body mb-1 block">音频链接</label>
+                  <div className="flex gap-2 mb-2">
+                    <input type="text" value={editForm.audioSrc} onChange={(e) => setEditForm({ ...editForm, audioSrc: e.target.value })} className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white/90 font-body text-xs" />
+                  </div>
+                  <input ref={fileInputRef} type="file" accept="audio/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadAudioFile(f); }} />
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    className={`w-full flex items-center justify-center gap-2 border border-dashed rounded-xl px-3 py-3 font-body text-xs transition-all cursor-pointer ${dragOver ? 'bg-cacao-gold/30 border-cacao-gold scale-[1.02]' : 'bg-cacao-gold/10 border-cacao-gold/30 text-cacao-gold hover:bg-cacao-gold/20'} ${uploading ? 'opacity-50 pointer-events-none' : ''}`}
+                  >
+                    {uploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
+                    {uploading ? '上传中...' : '点击或拖拽音频文件到此处'}
+                  </div>
+                  {editForm.audioSrc && (
+                    <audio src={editForm.audioSrc} controls className="w-full mt-2 h-8" />
+                  )}
+                </div>
                 <div><label className="text-white/70 text-xs font-body mb-1 block">视频链接</label><input type="text" value={editForm.videoSrc} onChange={(e) => setEditForm({ ...editForm, videoSrc: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white/90 font-body text-xs" /></div>
                 <div><label className="text-white/70 text-xs font-body mb-1 block">标题</label><input type="text" value={editForm.title} onChange={(e) => setEditForm({ ...editForm, title: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white/90 font-body text-xs" /></div>
                 <div><label className="text-white/70 text-xs font-body mb-1 block">英文原文</label><textarea value={editForm.originalText} onChange={(e) => setEditForm({ ...editForm, originalText: e.target.value })} rows={3} className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white/90 font-body text-xs resize-none" /></div>
