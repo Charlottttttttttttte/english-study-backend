@@ -127,6 +127,17 @@ export default function AdminPage() {
     }
   }, [loadUsers]);
 
+  const handleToggleRole = useCallback(async (userId: string, currentRole: string) => {
+    const newRole = currentRole === 'admin' ? 'user' : 'admin';
+    try {
+      const { error } = await supabase.from('users').update({ role: newRole }).eq('id', userId);
+      if (error) throw error;
+      loadUsers();
+    } catch (err: any) {
+      setError(err.message);
+    }
+  }, [loadUsers]);
+
   const tabs = [
     { key: 'materials' as const, label: '学习资源', icon: BookOpen },
     { key: 'users' as const, label: '用户管理', icon: Users },
@@ -197,13 +208,36 @@ export default function AdminPage() {
       {activeTab === 'users' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <div className="glass-card p-5 rounded-jumbo">
-            <h2 className="font-body font-semibold text-white/90 mb-4">用户列表</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-body font-semibold text-white/90">用户列表</h2>
+              <span className="text-white/50 text-xs font-body">共 {users.length} 人</span>
+            </div>
             {users.length === 0 ? <p className="text-white/70 text-sm font-body text-center py-8">暂无用户</p> : (
               <div className="space-y-2">
+                {/* Header */}
+                <div className="flex items-center px-4 py-2 text-white/40 text-xs font-body">
+                  <span className="flex-1">用户名</span>
+                  <span className="w-20 text-center">角色</span>
+                  <span className="w-24 text-center">注册时间</span>
+                  <span className="w-20 text-right">操作</span>
+                </div>
                 {users.map((u) => (
-                  <div key={u.id} className="flex items-center justify-between bg-white/5 rounded-2xl px-4 py-3">
-                    <div><span className="font-body text-sm text-white/90">{u.username}</span><span className={`ml-2 text-xs px-2 py-0.5 rounded-full ${u.role === 'admin' ? 'bg-cacao-gold/20 text-cacao-gold' : 'bg-white/10 text-white/70'}`}>{u.role}</span></div>
-                    {u.role !== 'admin' && <button onClick={() => handleDeleteUser(u.id)} className="text-white/40 hover:text-red-400 text-xs font-body">删除</button>}
+                  <div key={u.id} className="flex items-center bg-white/5 rounded-2xl px-4 py-3">
+                    <span className="flex-1 font-body text-sm text-white/90 truncate">{u.username}</span>
+                    <div className="w-20 text-center">
+                      <button
+                        onClick={() => handleToggleRole(u.id, u.role)}
+                        className={`text-xs px-2 py-1 rounded-full transition-all ${u.role === 'admin' ? 'bg-cacao-gold/20 text-cacao-gold hover:bg-cacao-gold/30' : 'bg-white/10 text-white/70 hover:bg-white/20'}`}
+                      >
+                        {u.role === 'admin' ? '管理员' : '用户'}
+                      </button>
+                    </div>
+                    <span className="w-24 text-center text-white/40 text-xs font-body">
+                      {new Date(u.created_at).toLocaleDateString('zh-CN')}
+                    </span>
+                    <div className="w-20 text-right">
+                      <button onClick={() => handleDeleteUser(u.id)} className="text-white/30 hover:text-red-400 text-xs font-body transition-colors">删除</button>
+                    </div>
                   </div>
                 ))}
               </div>
