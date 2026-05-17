@@ -59,12 +59,24 @@ export default function SettingsPage() {
       const fileName = `audio-${Date.now()}.${ext}`;
       const bucketName = 'audio-files';
       
+      // Try to create bucket if it doesn't exist
+      const { data: buckets } = await supabase.storage.listBuckets();
+      const bucketExists = buckets?.some(b => b.name === bucketName);
+      if (!bucketExists) {
+        const { error: createError } = await supabase.storage.createBucket(bucketName, { public: true });
+        if (createError && !createError.message.includes('already exists')) {
+          throw new Error('请让管理员在 Supabase 后台创建 Storage Bucket：Storage → New bucket → 名称填 audio-files → 勾选 Public');
+        }
+      }
+      
+      // Upload to Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from(bucketName)
         .upload(fileName, file, { upsert: true });
       
       if (uploadError) throw uploadError;
       
+      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from(bucketName)
         .getPublicUrl(fileName);
