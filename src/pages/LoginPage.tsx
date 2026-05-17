@@ -11,6 +11,8 @@ export default function LoginPage() {
   const [useLocal, setUseLocal] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [adminCode, setAdminCode] = useState('');
+  const [showAdminCode, setShowAdminCode] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -45,7 +47,7 @@ export default function LoginPage() {
         try {
           const res = isLogin
             ? await login(username, password)
-            : await register(username, password);
+            : await register(username, password, adminCode || undefined);
 
           saveToken(res.token);
           saveApiUser(res.user);
@@ -172,6 +174,30 @@ export default function LoginPage() {
                 className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white/90 font-body text-sm placeholder-white/30 focus:outline-none focus:border-cacao-gold/40 focus:ring-1 focus:ring-cacao-gold/20"
               />
             </div>
+
+            {/* Admin code input (only for registration) */}
+            {!isLogin && !useLocal && (
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-white/80 text-sm font-body">管理员注册码（可选）</label>
+                  <button
+                    type="button"
+                    onClick={() => setShowAdminCode(!showAdminCode)}
+                    className="text-cacao-gold/70 text-xs font-body hover:text-cacao-gold"
+                  >
+                    {showAdminCode ? '隐藏' : '显示'}
+                  </button>
+                </div>
+                <input
+                  type={showAdminCode ? 'text' : 'password'}
+                  value={adminCode}
+                  onChange={(e) => setAdminCode(e.target.value)}
+                  placeholder="输入注册码可成为管理员"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white/90 font-body text-sm placeholder-white/30 focus:outline-none focus:border-cacao-gold/40 focus:ring-1 focus:ring-cacao-gold/20"
+                />
+                <p className="text-white/40 text-xs font-body mt-1">留空则注册为普通用户</p>
+              </div>
+            )}
 
             {error && (
               <p className="text-red-400 text-sm font-body">{error}</p>
