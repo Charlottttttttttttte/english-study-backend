@@ -6,7 +6,7 @@ export interface AuthResponse {
 }
 
 // 管理员注册码 - 你可以修改成自己的密码
-const ADMIN_CODE = 'JUNGLE2024';
+const ADMIN_CODE = 'aaaAAA111111!';
 
 export async function register(username: string, password: string, adminCode?: string): Promise<AuthResponse> {
   // 如果输入了正确的注册码，设为管理员，否则是普通用户
