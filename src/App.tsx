@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './components/Layout'
 import HomePage from './pages/HomePage'
 import MapPage from './pages/MapPage'
@@ -9,12 +9,21 @@ import StatsPage from './pages/StatsPage'
 import SettingsPage from './pages/SettingsPage'
 import LoginPage from './pages/LoginPage'
 import AdminPage from './pages/AdminPage'
+import { getCurrentUser } from './api/auth'
+
+function RoleHome() {
+  const user = getCurrentUser()
+  if (!user) return <LoginPage />
+  if (user.role === 'admin') return <Navigate to="/admin" replace />
+  return <HomePage />
+}
 
 export default function App() {
   return (
     <Layout>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<RoleHome />} />
+        <Route path="/home" element={<HomePage />} />
         <Route path="/map/:date" element={<MapPage />} />
         <Route path="/level1/:date" element={<Level1Page />} />
         <Route path="/level2/:date" element={<Level2Page />} />
