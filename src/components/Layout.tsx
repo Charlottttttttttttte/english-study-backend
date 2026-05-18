@@ -18,7 +18,7 @@ export default function Layout({ children }: LayoutProps) {
         <div
           className="absolute inset-0 animate-foliage-rustle"
           style={{
-            backgroundImage: 'url(/jungle-bg-layer-1.jpg)',
+            backgroundImage: 'url(./jungle-bg-layer-1.jpg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             opacity: 0.60,
@@ -28,7 +28,7 @@ export default function Layout({ children }: LayoutProps) {
         <div
           className="absolute inset-0 animate-foliage-rustle"
           style={{
-            backgroundImage: 'url(/jungle-bg-layer-2.jpg)',
+            backgroundImage: 'url(./jungle-bg-layer-2.jpg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             animationDirection: 'reverse',
@@ -40,7 +40,7 @@ export default function Layout({ children }: LayoutProps) {
         <div
           className="absolute inset-0 animate-foliage-rustle"
           style={{
-            backgroundImage: 'url(/jungle-bg-layer-3.jpg)',
+            backgroundImage: 'url(./jungle-bg-layer-3.jpg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             animationDelay: '-4s',
@@ -55,7 +55,7 @@ export default function Layout({ children }: LayoutProps) {
           onMouseEnter={(e) => { (e.target as HTMLElement).style.filter = 'blur(0px)'; }}
           onMouseLeave={(e) => { (e.target as HTMLElement).style.filter = 'blur(1px)'; }}
         >
-          <img src="/hidden-tiger.png" alt="" className="w-full h-full object-contain" draggable={false} />
+          <img src="./hidden-tiger.png" alt="" className="w-full h-full object-contain" draggable={false} />
         </div>
 
         {/* Hidden Monkey - left middle */}
@@ -65,7 +65,7 @@ export default function Layout({ children }: LayoutProps) {
           onMouseEnter={(e) => { (e.target as HTMLElement).style.filter = 'blur(0px)'; }}
           onMouseLeave={(e) => { (e.target as HTMLElement).style.filter = 'blur(1px)'; }}
         >
-          <img src="/hidden-monkey.png" alt="" className="w-full h-full object-contain" draggable={false} />
+          <img src="./hidden-monkey.png" alt="" className="w-full h-full object-contain" draggable={false} />
         </div>
 
         {/* Hidden Frog - bottom left */}
@@ -75,7 +75,7 @@ export default function Layout({ children }: LayoutProps) {
           onMouseEnter={(e) => { (e.target as HTMLElement).style.filter = 'blur(0px)'; }}
           onMouseLeave={(e) => { (e.target as HTMLElement).style.filter = 'blur(1px)'; }}
         >
-          <img src="/hidden-frog.png" alt="" className="w-full h-full object-contain" draggable={false} />
+          <img src="./hidden-frog.png" alt="" className="w-full h-full object-contain" draggable={false} />
         </div>
 
         {/* Hidden Parrot - right side */}
@@ -85,7 +85,7 @@ export default function Layout({ children }: LayoutProps) {
           onMouseEnter={(e) => { (e.target as HTMLElement).style.filter = 'blur(0px)'; }}
           onMouseLeave={(e) => { (e.target as HTMLElement).style.filter = 'blur(1px)'; }}
         >
-          <img src="/hidden-parrot.png" alt="" className="w-full h-full object-contain" draggable={false} />
+          <img src="./hidden-parrot.png" alt="" className="w-full h-full object-contain" draggable={false} />
         </div>
 
         {/* STRONG Dark overlay - keeps background subtle */}
@@ -100,7 +100,7 @@ export default function Layout({ children }: LayoutProps) {
         <div
           className="absolute inset-0 pointer-events-none z-[7]"
           style={{
-            backgroundImage: 'url(/noise-texture.png)',
+            backgroundImage: 'url(./noise-texture.png)',
             backgroundRepeat: 'repeat',
             backgroundSize: '256px 256px',
             mixBlendMode: 'overlay',
