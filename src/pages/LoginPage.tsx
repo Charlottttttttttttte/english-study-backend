@@ -37,7 +37,6 @@ export default function LoginPage() {
         ? await login(username, password)
         : await register(username, password, adminCode || undefined);
 
-      // 传入 rememberMe 参数控制 token 有效期
       saveToken(res.token, rememberMe);
       saveApiUser(res.user);
       navigate('/');
@@ -72,8 +71,8 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Form Card */}
-        <div className="glass-card p-8 rounded-jumbo">
+        {/* Form Card - 更透明，让丛林背景透出来 */}
+        <div className="glass-card p-8 rounded-jumbo" style={{ background: 'rgba(18, 40, 30, 0.55)', backdropFilter: 'blur(8px)' }}>
           {/* Login/Register Toggle */}
           <div className="flex mb-6 bg-white/5 rounded-full p-1">
             <button
