@@ -152,7 +152,7 @@ export default function AdminPage() {
     <div className="pt-8 pb-12">
       <motion.div className="mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         <div className="flex items-center justify-between mb-4">
-          <motion.button onClick={() => navigate('/')} className="flex items-center gap-2 text-white/90 hover:text-cacao-gold transition-colors font-body text-sm" whileHover={{ x: -4 }} whileTap={{ scale: 0.95 }}>
+          <motion.button onClick={() => navigate('/home')} className="flex items-center gap-2 text-white/90 hover:text-cacao-gold transition-colors font-body text-sm" whileHover={{ x: -4 }} whileTap={{ scale: 0.95 }}>
             <ArrowLeft size={18} />
             返回日历
           </motion.button>
