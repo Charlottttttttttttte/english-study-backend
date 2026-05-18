@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, LogOut, BookOpen, Users, BarChart3, Edit3, Check, X } from 'lucide-react';
+import { ArrowLeft, LogOut, BookOpen, Users, BarChart3, Edit3, Check, X, Trash2 } from 'lucide-react';
 import { supabase } from '../api/client';
 import { logout, isAdmin, isLoggedIn } from '../api/auth';
 import type { StudyMaterial } from '../types';
@@ -27,10 +27,8 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (!isLoggedIn()) {
-      // 未登录 → 跳到登录页
       navigate('/login');
     } else if (!isAdmin()) {
-      // 已登录但不是管理员 → 跳到首页
       navigate('/');
     }
   }, [navigate]);
@@ -121,6 +119,30 @@ export default function AdminPage() {
     }
   }, [editForm, editingIndex, loadMaterials]);
 
+  // 新增：删除学习资源
+  const handleDeleteMaterial = useCallback(async (index: number) => {
+    if (!window.confirm('确定清空此学习资源的所有内容？\n\n这将删除：\n• 音频链接\n• 视频链接\n• 标题\n• 原文和翻译\n\n此操作不可恢复！')) return;
+    setLoading(true);
+    try {
+      const dayIndex = index + 1;
+      const { error } = await supabase.from('materials').update({
+        audio_src: '',
+        video_src: '',
+        title: '',
+        original_text: '',
+        translated_text: '',
+      }).eq('day_index', dayIndex);
+      if (error) throw error;
+      loadMaterials();
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [loadMaterials]);
+
   const handleDeleteUser = useCallback(async (userId: string) => {
     if (!window.confirm('确定删除此用户？')) return;
     try {
@@ -198,10 +220,17 @@ export default function AdminPage() {
               ) : (
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-body font-semibold text-white/90">Day {i + 1}: {m.title}</h3>
-                    <button onClick={() => startEdit(i)} className="p-1.5 rounded-full bg-white/5 text-white/60 hover:bg-cacao-gold/20 hover:text-cacao-gold"><Edit3 size={14} /></button>
+                    <h3 className="font-body font-semibold text-white/90">Day {i + 1}: {m.title || '（未设置）'}</h3>
+                    <div className="flex gap-1">
+                      <button onClick={() => startEdit(i)} className="p-1.5 rounded-full bg-white/5 text-white/60 hover:bg-cacao-gold/20 hover:text-cacao-gold"><Edit3 size={14} /></button>
+                      {/* 新增：删除按钮 */}
+                      <button onClick={() => handleDeleteMaterial(i)} className="p-1.5 rounded-full bg-white/5 text-white/60 hover:bg-red-500/20 hover:text-red-400" title="清空资源"><Trash2 size={14} /></button>
+                    </div>
                   </div>
-                  <p className="text-white/70 text-xs font-body truncate">{m.audioSrc}</p>
+                  <p className={`text-xs font-body truncate ${m.audioSrc ? 'text-white/70' : 'text-white/30'}`}>{m.audioSrc || '暂无音频'}</p>
+                  {!m.title && !m.audioSrc && (
+                    <span className="inline-block mt-1 text-xs text-white/30 font-body">⚠️ 此资源为空</span>
+                  )}
                 </div>
               )}
             </motion.div>
@@ -228,16 +257,11 @@ export default function AdminPage() {
                   <div key={u.id} className="flex items-center bg-white/5 rounded-2xl px-4 py-3">
                     <span className="flex-1 font-body text-sm text-white/90 truncate">{u.username}</span>
                     <div className="w-20 text-center">
-                      <button
-                        onClick={() => handleToggleRole(u.id, u.role)}
-                        className={`text-xs px-2 py-1 rounded-full transition-all ${u.role === 'admin' ? 'bg-cacao-gold/20 text-cacao-gold hover:bg-cacao-gold/30' : 'bg-white/10 text-white/70 hover:bg-white/20'}`}
-                      >
+                      <button onClick={() => handleToggleRole(u.id, u.role)} className={`text-xs px-2 py-1 rounded-full transition-all ${u.role === 'admin' ? 'bg-cacao-gold/20 text-cacao-gold hover:bg-cacao-gold/30' : 'bg-white/10 text-white/70 hover:bg-white/20'}`}>
                         {u.role === 'admin' ? '管理员' : '用户'}
                       </button>
                     </div>
-                    <span className="w-24 text-center text-white/40 text-xs font-body">
-                      {new Date(u.created_at).toLocaleDateString('zh-CN')}
-                    </span>
+                    <span className="w-24 text-center text-white/40 text-xs font-body">{new Date(u.created_at).toLocaleDateString('zh-CN')}</span>
                     <div className="w-20 text-right">
                       <button onClick={() => handleDeleteUser(u.id)} className="text-white/30 hover:text-red-400 text-xs font-body transition-colors">删除</button>
                     </div>
