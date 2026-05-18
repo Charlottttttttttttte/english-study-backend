@@ -40,7 +40,7 @@ export default function AdminPage() {
       setMaterials((data || []).map((m: any) => ({
         date: `day${m.day_index}`,
         videoSrc: m.video_src || '',
-        videoPoster: '/jungle-bg-layer-2.jpg',
+        videoPoster: './jungle-bg-layer-2.jpg',
         audioSrc: m.audio_src || '',
         title: m.title || '',
         originalText: m.original_text || '',
@@ -119,7 +119,6 @@ export default function AdminPage() {
     }
   }, [editForm, editingIndex, loadMaterials]);
 
-  // 新增：删除学习资源
   const handleDeleteMaterial = useCallback(async (index: number) => {
     if (!window.confirm('确定清空此学习资源的所有内容？\n\n这将删除：\n• 音频链接\n• 视频链接\n• 标题\n• 原文和翻译\n\n此操作不可恢复！')) return;
     setLoading(true);
@@ -223,7 +222,6 @@ export default function AdminPage() {
                     <h3 className="font-body font-semibold text-white/90">Day {i + 1}: {m.title || '（未设置）'}</h3>
                     <div className="flex gap-1">
                       <button onClick={() => startEdit(i)} className="p-1.5 rounded-full bg-white/5 text-white/60 hover:bg-cacao-gold/20 hover:text-cacao-gold"><Edit3 size={14} /></button>
-                      {/* 新增：删除按钮 */}
                       <button onClick={() => handleDeleteMaterial(i)} className="p-1.5 rounded-full bg-white/5 text-white/60 hover:bg-red-500/20 hover:text-red-400" title="清空资源"><Trash2 size={14} /></button>
                     </div>
                   </div>
@@ -261,7 +259,9 @@ export default function AdminPage() {
                         {u.role === 'admin' ? '管理员' : '用户'}
                       </button>
                     </div>
-                    <span className="w-24 text-center text-white/40 text-xs font-body">{new Date(u.created_at).toLocaleDateString('zh-CN')}</span>
+                    <span className="w-24 text-center text-white/40 text-xs font-body">
+                      {new Date(u.created_at).toLocaleDateString('zh-CN')}
+                    </span>
                     <div className="w-20 text-right">
                       <button onClick={() => handleDeleteUser(u.id)} className="text-white/30 hover:text-red-400 text-xs font-body transition-colors">删除</button>
                     </div>
