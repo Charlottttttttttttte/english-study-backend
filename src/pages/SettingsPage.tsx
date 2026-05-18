@@ -34,7 +34,7 @@ export default function SettingsPage() {
       setMaterials((data || []).map((m: any) => ({
         date: `day${m.day_index}`,
         videoSrc: m.video_src || '',
-        videoPoster: '/jungle-bg-layer-2.jpg',
+        videoPoster: './jungle-bg-layer-2.jpg',
         audioSrc: m.audio_src || '',
         title: m.title || '',
         originalText: m.original_text || '',
@@ -150,7 +150,7 @@ export default function SettingsPage() {
   return (
     <div className="pt-8 pb-12">
       <motion.div className="mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <motion.button onClick={() => navigate('/')} className="flex items-center gap-2 text-white/90 hover:text-cacao-gold transition-colors font-body text-sm mb-4" whileHover={{ x: -4 }} whileTap={{ scale: 0.95 }}>
+        <motion.button onClick={() => navigate('/home')} className="flex items-center gap-2 text-white/90 hover:text-cacao-gold transition-colors font-body text-sm mb-4" whileHover={{ x: -4 }} whileTap={{ scale: 0.95 }}>
           <ArrowLeft size={18} />
           返回日历
         </motion.button>
