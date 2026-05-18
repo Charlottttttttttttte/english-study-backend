@@ -8,6 +8,10 @@ export interface AuthResponse {
 // 管理员注册码 - 你可以修改成自己的密码
 const ADMIN_CODE = 'JUNGLE2024';
 
+// Token 有效期（毫秒）
+const REMEMBER_ME_DAYS = 30; // 记住我：30 天
+const DEFAULT_DAYS = 7;      // 不记住：7 天
+
 export async function register(username: string, password: string, adminCode?: string): Promise<AuthResponse> {
   // 先检查用户名是否已存在
   const { data: existingUser } = await supabase
@@ -50,20 +54,40 @@ export async function login(username: string, password: string): Promise<AuthRes
   return { token, user: { id: String(data.id), username: data.username, role: data.role } };
 }
 
+// 保存 token 和过期时间
+export function saveToken(token: string, rememberMe: boolean = false) {
+  localStorage.setItem('englishstudy_token', token);
+  const days = rememberMe ? REMEMBER_ME_DAYS : DEFAULT_DAYS;
+  const expireAt = Date.now() + days * 24 * 60 * 60 * 1000;
+  localStorage.setItem('englishstudy_token_expire', String(expireAt));
+}
+
 export function getToken(): string | null {
   return localStorage.getItem('englishstudy_token');
 }
 
-export function saveToken(token: string) {
-  localStorage.setItem('englishstudy_token', token);
-}
-
 export function removeToken() {
   localStorage.removeItem('englishstudy_token');
+  localStorage.removeItem('englishstudy_token_expire');
 }
 
+// 检查是否已登录（包括过期检查）
 export function isLoggedIn(): boolean {
-  return !!getToken();
+  const token = getToken();
+  if (!token) return false;
+  
+  // 检查是否过期
+  const expireAt = localStorage.getItem('englishstudy_token_expire');
+  if (expireAt) {
+    const expireTime = parseInt(expireAt, 10);
+    if (Date.now() > expireTime) {
+      // Token 已过期，自动清除
+      logout();
+      return false;
+    }
+  }
+  
+  return true;
 }
 
 export function getCurrentUser(): { id: string; username: string; role: string } | null {
