@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [adminCode, setAdminCode] = useState('');
   const [showAdminCode, setShowAdminCode] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -36,7 +37,8 @@ export default function LoginPage() {
         ? await login(username, password)
         : await register(username, password, adminCode || undefined);
 
-      saveToken(res.token);
+      // 传入 rememberMe 参数控制 token 有效期
+      saveToken(res.token, rememberMe);
       saveApiUser(res.user);
       navigate('/');
       window.location.reload();
@@ -135,6 +137,20 @@ export default function LoginPage() {
               </div>
             )}
 
+            {/* 记住我 */}
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="rememberMe"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 rounded border-white/20 bg-white/5 text-cacao-gold focus:ring-cacao-gold/40"
+              />
+              <label htmlFor="rememberMe" className="text-white/70 text-sm font-body cursor-pointer">
+                记住我（30天免登录）
+              </label>
+            </div>
+
             {error && (
               <p className="text-red-400 text-sm font-body">{error}</p>
             )}
@@ -153,8 +169,8 @@ export default function LoginPage() {
             </motion.button>
           </form>
 
-          <p className="text-white/60 text-xs font-body text-center mt-4">
-            登录后可同步学习进度到云端
+          <p className="text-white/40 text-xs font-body text-center mt-4">
+            {rememberMe ? '30天内自动登录' : '7天内自动登录'}
           </p>
         </div>
       </motion.div>
