@@ -48,35 +48,35 @@ export default function Layout({ children }: LayoutProps) {
           }}
         />
 
-        {/* Hidden Animals - 40%透明度，无模糊，非常明显 */}
+        {/* Hidden Animals - 随机大小，更自然 */}
 
-        {/* Hidden Tiger - top right area */}
-        <div className="absolute top-[15%] right-[5%] w-[120px] h-[120px] opacity-[0.40] hover:opacity-100 transition-all duration-500 cursor-pointer hover:scale-125 z-[5]">
+        {/* Tiger - 最大，右上角 */}
+        <div className="absolute top-[12%] right-[8%] w-[90px] h-[90px] opacity-[0.30] hover:opacity-100 transition-all duration-500 cursor-pointer hover:scale-125 z-[5]">
           <img src="./hidden-tiger.png" alt="" className="w-full h-full object-contain" draggable={false} />
         </div>
 
-        {/* Hidden Monkey - left middle */}
-        <div className="absolute top-[35%] left-[3%] w-[100px] h-[100px] opacity-[0.40] hover:opacity-100 transition-all duration-500 cursor-pointer hover:scale-125 z-[5]">
+        {/* Monkey - 中等偏大，左中 */}
+        <div className="absolute top-[38%] left-[5%] w-[75px] h-[75px] opacity-[0.30] hover:opacity-100 transition-all duration-500 cursor-pointer hover:scale-125 z-[5]">
           <img src="./hidden-monkey.png" alt="" className="w-full h-full object-contain" draggable={false} />
         </div>
 
-        {/* Hidden Frog - bottom left */}
-        <div className="absolute bottom-[25%] left-[8%] w-[60px] h-[60px] opacity-[0.40] hover:opacity-100 transition-all duration-500 cursor-pointer hover:scale-125 z-[5]">
+        {/* Frog - 最小，左下 */}
+        <div className="absolute bottom-[20%] left-[15%] w-[45px] h-[45px] opacity-[0.30] hover:opacity-100 transition-all duration-500 cursor-pointer hover:scale-125 z-[5]">
           <img src="./hidden-frog.png" alt="" className="w-full h-full object-contain" draggable={false} />
         </div>
 
-        {/* Hidden Parrot - right side */}
-        <div className="absolute top-[55%] right-[5%] w-[80px] h-[80px] opacity-[0.40] hover:opacity-100 transition-all duration-500 cursor-pointer hover:scale-125 z-[5]">
+        {/* Parrot - 中等，右中 */}
+        <div className="absolute top-[60%] right-[10%] w-[65px] h-[65px] opacity-[0.30] hover:opacity-100 transition-all duration-500 cursor-pointer hover:scale-125 z-[5]">
           <img src="./hidden-parrot.png" alt="" className="w-full h-full object-contain" draggable={false} />
         </div>
 
-        {/* Hidden Snake - top left */}
-        <div className="absolute top-[8%] left-[12%] w-[70px] h-[70px] opacity-[0.35] hover:opacity-100 transition-all duration-500 cursor-pointer hover:scale-125 z-[5]">
+        {/* Snake - 细长，左上（新图片） */}
+        <div className="absolute top-[5%] left-[20%] w-[80px] h-[55px] opacity-[0.28] hover:opacity-100 transition-all duration-500 cursor-pointer hover:scale-125 z-[5]">
           <img src="./hidden-snake.png" alt="" className="w-full h-full object-contain" draggable={false} />
         </div>
 
-        {/* Hidden Butterfly - center-right */}
-        <div className="absolute top-[40%] right-[15%] w-[50px] h-[50px] opacity-[0.35] hover:opacity-100 transition-all duration-500 cursor-pointer hover:scale-125 z-[5]">
+        {/* Butterfly - 很小，中右（新图片） */}
+        <div className="absolute top-[45%] right-[20%] w-[40px] h-[40px] opacity-[0.28] hover:opacity-100 transition-all duration-500 cursor-pointer hover:scale-125 z-[5]">
           <img src="./hidden-butterfly.png" alt="" className="w-full h-full object-contain" draggable={false} />
         </div>
 
