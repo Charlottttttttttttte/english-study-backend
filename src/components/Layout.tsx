@@ -88,6 +88,26 @@ export default function Layout({ children }: LayoutProps) {
           <img src="./hidden-parrot.png" alt="" className="w-full h-full object-contain" draggable={false} />
         </div>
 
+        {/* Hidden Snake - top left, on a branch 🆕 */}
+        <div
+          className="absolute top-[8%] left-[12%] w-[70px] h-[70px] opacity-[0.06] hover:opacity-50 transition-all duration-500 cursor-pointer hover:scale-105 z-[5]"
+          style={{ filter: 'blur(1px)' }}
+          onMouseEnter={(e) => { (e.target as HTMLElement).style.filter = 'blur(0px)'; }}
+          onMouseLeave={(e) => { (e.target as HTMLElement).style.filter = 'blur(1px)'; }}
+        >
+          <img src="./hidden-snake.png" alt="" className="w-full h-full object-contain" draggable={false} />
+        </div>
+
+        {/* Hidden Butterfly - floating near center-right 🆕 */}
+        <div
+          className="absolute top-[40%] right-[15%] w-[50px] h-[50px] opacity-[0.07] hover:opacity-50 transition-all duration-500 cursor-pointer hover:scale-105 z-[5]"
+          style={{ filter: 'blur(1px)' }}
+          onMouseEnter={(e) => { (e.target as HTMLElement).style.filter = 'blur(0px)'; }}
+          onMouseLeave={(e) => { (e.target as HTMLElement).style.filter = 'blur(1px)'; }}
+        >
+          <img src="./hidden-butterfly.png" alt="" className="w-full h-full object-contain" draggable={false} />
+        </div>
+
         {/* STRONG Dark overlay - keeps background subtle */}
         <div
           className="absolute inset-0 pointer-events-none z-[6]"
