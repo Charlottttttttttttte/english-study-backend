@@ -70,12 +70,7 @@ export default function Layout({ children }: LayoutProps) {
           <img src="./hidden-parrot.png" alt="" className="w-full h-full object-contain" draggable={false} />
         </div>
 
-        {/* Snake - 细长，左上（新图片） */}
-        <div className="absolute top-[5%] left-[20%] w-[80px] h-[55px] opacity-[0.28] hover:opacity-100 transition-all duration-500 cursor-pointer hover:scale-125 z-[5]">
-          <img src="./hidden-snake.png" alt="" className="w-full h-full object-contain" draggable={false} />
-        </div>
-
-        {/* Butterfly - 很小，中右（新图片） */}
+        {/* Butterfly - 很小，中右 */}
         <div className="absolute top-[45%] right-[20%] w-[40px] h-[40px] opacity-[0.28] hover:opacity-100 transition-all duration-500 cursor-pointer hover:scale-125 z-[5]">
           <img src="./hidden-butterfly.png" alt="" className="w-full h-full object-contain" draggable={false} />
         </div>
