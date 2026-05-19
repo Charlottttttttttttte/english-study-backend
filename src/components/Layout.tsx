@@ -48,65 +48,35 @@ export default function Layout({ children }: LayoutProps) {
           }}
         />
 
-        {/* Hidden Animals - 更高透明度，更容易发现 */}
+        {/* Hidden Animals - 40%透明度，无模糊，非常明显 */}
 
         {/* Hidden Tiger - top right area */}
-        <div
-          className="absolute top-[15%] right-[5%] w-[120px] h-[120px] opacity-[0.20] hover:opacity-80 transition-all duration-500 cursor-pointer hover:scale-110 z-[5]"
-          style={{ filter: 'blur(0.5px)' }}
-          onMouseEnter={(e) => { (e.target as HTMLElement).style.filter = 'blur(0px)'; }}
-          onMouseLeave={(e) => { (e.target as HTMLElement).style.filter = 'blur(0.5px)'; }}
-        >
+        <div className="absolute top-[15%] right-[5%] w-[120px] h-[120px] opacity-[0.40] hover:opacity-100 transition-all duration-500 cursor-pointer hover:scale-125 z-[5]">
           <img src="./hidden-tiger.png" alt="" className="w-full h-full object-contain" draggable={false} />
         </div>
 
         {/* Hidden Monkey - left middle */}
-        <div
-          className="absolute top-[35%] left-[3%] w-[100px] h-[100px] opacity-[0.20] hover:opacity-80 transition-all duration-500 cursor-pointer hover:scale-110 z-[5]"
-          style={{ filter: 'blur(0.5px)' }}
-          onMouseEnter={(e) => { (e.target as HTMLElement).style.filter = 'blur(0px)'; }}
-          onMouseLeave={(e) => { (e.target as HTMLElement).style.filter = 'blur(0.5px)'; }}
-        >
+        <div className="absolute top-[35%] left-[3%] w-[100px] h-[100px] opacity-[0.40] hover:opacity-100 transition-all duration-500 cursor-pointer hover:scale-125 z-[5]">
           <img src="./hidden-monkey.png" alt="" className="w-full h-full object-contain" draggable={false} />
         </div>
 
         {/* Hidden Frog - bottom left */}
-        <div
-          className="absolute bottom-[25%] left-[8%] w-[60px] h-[60px] opacity-[0.20] hover:opacity-80 transition-all duration-500 cursor-pointer hover:scale-110 z-[5]"
-          style={{ filter: 'blur(0.5px)' }}
-          onMouseEnter={(e) => { (e.target as HTMLElement).style.filter = 'blur(0px)'; }}
-          onMouseLeave={(e) => { (e.target as HTMLElement).style.filter = 'blur(0.5px)'; }}
-        >
+        <div className="absolute bottom-[25%] left-[8%] w-[60px] h-[60px] opacity-[0.40] hover:opacity-100 transition-all duration-500 cursor-pointer hover:scale-125 z-[5]">
           <img src="./hidden-frog.png" alt="" className="w-full h-full object-contain" draggable={false} />
         </div>
 
         {/* Hidden Parrot - right side */}
-        <div
-          className="absolute top-[55%] right-[5%] w-[80px] h-[80px] opacity-[0.20] hover:opacity-80 transition-all duration-500 cursor-pointer hover:scale-110 z-[5]"
-          style={{ filter: 'blur(0.5px)' }}
-          onMouseEnter={(e) => { (e.target as HTMLElement).style.filter = 'blur(0px)'; }}
-          onMouseLeave={(e) => { (e.target as HTMLElement).style.filter = 'blur(0.5px)'; }}
-        >
+        <div className="absolute top-[55%] right-[5%] w-[80px] h-[80px] opacity-[0.40] hover:opacity-100 transition-all duration-500 cursor-pointer hover:scale-125 z-[5]">
           <img src="./hidden-parrot.png" alt="" className="w-full h-full object-contain" draggable={false} />
         </div>
 
         {/* Hidden Snake - top left */}
-        <div
-          className="absolute top-[8%] left-[12%] w-[70px] h-[70px] opacity-[0.18] hover:opacity-80 transition-all duration-500 cursor-pointer hover:scale-110 z-[5]"
-          style={{ filter: 'blur(0.5px)' }}
-          onMouseEnter={(e) => { (e.target as HTMLElement).style.filter = 'blur(0px)'; }}
-          onMouseLeave={(e) => { (e.target as HTMLElement).style.filter = 'blur(0.5px)'; }}
-        >
+        <div className="absolute top-[8%] left-[12%] w-[70px] h-[70px] opacity-[0.35] hover:opacity-100 transition-all duration-500 cursor-pointer hover:scale-125 z-[5]">
           <img src="./hidden-snake.png" alt="" className="w-full h-full object-contain" draggable={false} />
         </div>
 
         {/* Hidden Butterfly - center-right */}
-        <div
-          className="absolute top-[40%] right-[15%] w-[50px] h-[50px] opacity-[0.18] hover:opacity-80 transition-all duration-500 cursor-pointer hover:scale-110 z-[5]"
-          style={{ filter: 'blur(0.5px)' }}
-          onMouseEnter={(e) => { (e.target as HTMLElement).style.filter = 'blur(0px)'; }}
-          onMouseLeave={(e) => { (e.target as HTMLElement).style.filter = 'blur(0.5px)'; }}
-        >
+        <div className="absolute top-[40%] right-[15%] w-[50px] h-[50px] opacity-[0.35] hover:opacity-100 transition-all duration-500 cursor-pointer hover:scale-125 z-[5]">
           <img src="./hidden-butterfly.png" alt="" className="w-full h-full object-contain" draggable={false} />
         </div>
 
