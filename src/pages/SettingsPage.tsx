@@ -2,14 +2,13 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Headphones, FileText, Edit3, Check, X, Upload, Loader2 } from 'lucide-react';
-import { supabase } from '../api/client';
+import { tcb } from '../api/client';
 import { isLoggedIn, isAdmin } from '../api/auth';
 import type { StudyMaterial } from '../types';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
 
-  // 权限检查：未登录 → 登录页，非管理员 → 首页
   useEffect(() => {
     if (!isLoggedIn()) {
       navigate('/login');
@@ -17,6 +16,7 @@ export default function SettingsPage() {
       navigate('/');
     }
   }, [navigate]);
+
   const [materials, setMaterials] = useState<StudyMaterial[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<StudyMaterial | null>(null);
@@ -29,8 +29,7 @@ export default function SettingsPage() {
 
   const loadMaterials = useCallback(async () => {
     try {
-      const { data, error } = await supabase.from('materials').select('*').order('day_index');
-      if (error) throw error;
+      const { data } = await tcb.database().collection('materials').orderBy('day_index', 'asc').get();
       setMaterials((data || []).map((m: any) => ({
         date: `day${m.day_index}`,
         videoSrc: m.video_src || '',
@@ -67,34 +66,31 @@ export default function SettingsPage() {
     try {
       const ext = file.name.split('.').pop() || 'mp3';
       const fileName = `audio-${Date.now()}.${ext}`;
-      const bucketName = 'audio-files';
-      
-      // Try to create bucket if it doesn't exist
-      const { data: buckets } = await supabase.storage.listBuckets();
-      const bucketExists = buckets?.some(b => b.name === bucketName);
-      if (!bucketExists) {
-        const { error: createError } = await supabase.storage.createBucket(bucketName, { public: true });
-        if (createError && !createError.message.includes('already exists')) {
-          throw new Error('请让管理员在 Supabase 后台创建 Storage Bucket：Storage → New bucket → 名称填 audio-files → 勾选 Public');
-        }
+      const cloudPath = `audio-files/${fileName}`;
+
+      const uploadResult = await tcb.uploadFile({
+        cloudPath,
+        filePath: file as any,
+      });
+
+      if (!uploadResult || !uploadResult.fileID) {
+        throw new Error('上传失败');
       }
-      
-      // Upload to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from(bucketName)
-        .upload(fileName, file, { upsert: true });
-      
-      if (uploadError) throw uploadError;
-      
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from(bucketName)
-        .getPublicUrl(fileName);
-      
-      setEditForm({ ...editForm, audioSrc: publicUrl });
+
+      const fileID = uploadResult.fileID;
+      const urlResult: any = await tcb.getTempFileURL({
+        fileList: [fileID],
+      });
+
+      const tempFileURL = urlResult?.fileList?.[0]?.tempFileURL || urlResult?.fileList?.[0]?.fileID;
+      if (!tempFileURL) {
+        throw new Error('无法获取文件访问链接');
+      }
+
+      setEditForm({ ...editForm, audioSrc: tempFileURL });
       setSaved(false);
     } catch (err: any) {
-      setError('上传失败: ' + err.message);
+      setError('上传失败: ' + (err.message || '未知错误'));
     } finally {
       setUploading(false);
     }
@@ -106,7 +102,7 @@ export default function SettingsPage() {
   }, []);
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
+n    e.preventDefault();
     setDragOver(false);
   }, []);
 
@@ -126,22 +122,34 @@ export default function SettingsPage() {
     setLoading(true);
     try {
       const dayIndex = editingIndex + 1;
-      const { error } = await supabase.from('materials').update({
-        audio_src: editForm.audioSrc,
-        video_src: editForm.videoSrc,
-        title: editForm.title,
-        original_text: editForm.originalText,
-        translated_text: editForm.translatedText,
-      }).eq('day_index', dayIndex);
+      const { data: existingDocs } = await tcb.database().collection('materials').where({ day_index: dayIndex }).get();
 
-      if (error) throw error;
+      if (existingDocs && existingDocs.length > 0) {
+        await tcb.database().collection('materials').doc(existingDocs[0]._id).update({
+          audio_src: editForm.audioSrc,
+          video_src: editForm.videoSrc,
+          title: editForm.title,
+          original_text: editForm.originalText,
+          translated_text: editForm.translatedText,
+        });
+      } else {
+        await tcb.database().collection('materials').add({
+          day_index: dayIndex,
+          audio_src: editForm.audioSrc,
+          video_src: editForm.videoSrc,
+          title: editForm.title,
+          original_text: editForm.originalText,
+          translated_text: editForm.translatedText,
+        });
+      }
+
       setSaved(true);
       setEditingIndex(null);
       setEditForm(null);
       loadMaterials();
       setTimeout(() => setSaved(false), 2000);
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || '保存失败');
     } finally {
       setLoading(false);
     }
@@ -150,7 +158,7 @@ export default function SettingsPage() {
   return (
     <div className="pt-8 pb-12">
       <motion.div className="mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <motion.button onClick={() => navigate('/home')} className="flex items-center gap-2 text-white/90 hover:text-cacao-gold transition-colors font-body text-sm mb-4" whileHover={{ x: -4 }} whileTap={{ scale: 0.95 }}>
+        <motion.button onClick={() => navigate('/')} className="flex items-center gap-2 text-white/90 hover:text-cacao-gold transition-colors font-body text-sm mb-4" whileHover={{ x: -4 }} whileTap={{ scale: 0.95 }}>
           <ArrowLeft size={18} />
           返回日历
         </motion.button>
