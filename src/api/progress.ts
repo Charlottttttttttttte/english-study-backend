@@ -1,4 +1,4 @@
-import { supabase } from './client';
+import { tcb } from './client';
 import type { DayProgress } from '../types';
 import { getCurrentUser } from './auth';
 
@@ -9,43 +9,38 @@ function getUserId(): string | null {
 
 export async function getProgress(date: string): Promise<DayProgress> {
   const userId = getUserId();
-  if (!userId) {
+  if (!userId) return createEmptyProgress(date);
+
+  try {
+    const { data } = await tcb
+      .database()
+      .collection('progress')
+      .where({ user_id: userId, date })
+      .get();
+
+    if (!data || data.length === 0) return createEmptyProgress(date);
+
+    const record = data[0];
+    return {
+      date: record.date,
+      completed: record.completed || false,
+      studyDuration: record.study_duration || 0,
+      level1Completed: record.level1_completed || false,
+      level2Completed: record.level2_completed || false,
+      level3Completed: record.level3_completed || false,
+      dictationText: record.dictation_text || '',
+      transcriptText: record.transcript_text || '',
+      matchRate: record.match_rate || 0,
+      similarityRate: record.similarity_rate || 0,
+    };
+  } catch {
     return createEmptyProgress(date);
   }
-
-  const { data, error } = await supabase
-    .from('progress')
-    .select('*')
-    .eq('user_id', userId)
-    .eq('date', date)
-    .single();
-
-  if (error || !data) return createEmptyProgress(date);
-
-  return {
-    date: data.date,
-    completed: data.completed || false,
-    studyDuration: data.study_duration || 0,
-    level1Completed: data.level1_completed || false,
-    level2Completed: data.level2_completed || false,
-    level3Completed: data.level3_completed || false,
-    dictationText: data.dictation_text || '',
-    transcriptText: data.transcript_text || '',
-    matchRate: data.match_rate || 0,
-    similarityRate: data.similarity_rate || 0,
-  };
 }
 
 export async function saveProgress(date: string, progress: Partial<DayProgress>) {
   const userId = getUserId();
   if (!userId) return;
-
-  const { data: existing } = await supabase
-    .from('progress')
-    .select('id')
-    .eq('user_id', userId)
-    .eq('date', date)
-    .single();
 
   const record = {
     user_id: userId,
@@ -60,14 +55,27 @@ export async function saveProgress(date: string, progress: Partial<DayProgress>)
     similarity_rate: progress.similarityRate ?? 0,
   };
 
-  if (existing) {
-    await supabase.from('progress').update(record).eq('id', existing.id);
-  } else {
-    await supabase.from('progress').insert([record]);
+  try {
+    const { data: existing } = await tcb
+      .database()
+      .collection('progress')
+      .where({ user_id: userId, date })
+      .get();
+
+    if (existing && existing.length > 0) {
+      await tcb.database().collection('progress').doc(existing[0]._id).update(record);
+    } else {
+      await tcb.database().collection('progress').add(record);
+    }
+  } catch {
+    // 静默处理
   }
 }
 
-export async function checkin(date: string, data: { studyDuration?: number; transcriptText?: string; similarityRate?: number }) {
+export async function checkin(
+  date: string,
+  data: { studyDuration?: number; transcriptText?: string; similarityRate?: number }
+) {
   const userId = getUserId();
   if (!userId) return;
 
