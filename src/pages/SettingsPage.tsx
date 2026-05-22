@@ -102,7 +102,7 @@ export default function SettingsPage() {
   }, []);
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
-n    e.preventDefault();
+    e.preventDefault();
     setDragOver(false);
   }, []);
 
