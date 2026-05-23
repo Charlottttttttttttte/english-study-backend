@@ -3,12 +3,13 @@ import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 import { inspectAttr } from 'plugin-inspect-react-code'
 
-// https://vite.dev/config/
 export default defineConfig({
   base: '/english-study-backend/',
   plugins: [inspectAttr(), react()],
-  server: {
-    port: 3000,
+  build: {
+    rollupOptions: {
+      external: ['@cloudbase/js-sdk'],
+    },
   },
   resolve: {
     alias: {
