@@ -7,7 +7,6 @@ const app = cloudbase.init({
 });
 
 export const db = app.database();
-export const auth = app.auth();
 export const tcb = app;
 export { app };
 export const ENV = ENV_ID;
