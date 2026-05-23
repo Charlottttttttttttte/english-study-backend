@@ -1,41 +1,17 @@
-import { tcb } from './client';
+import { callCloudFunction } from './client';
 
 export interface AuthResponse {
   token: string;
   user: { id: string; username: string; role: string };
 }
 
-const ADMIN_CODE = 'JUNGLE2024';
-
 export async function register(
   username: string,
   password: string,
   adminCode?: string
 ): Promise<AuthResponse> {
-  const { data: existingUsers } = await tcb
-    .database()
-    .collection('users')
-    .where({ username })
-    .get();
-
-  if (existingUsers && existingUsers.length > 0) {
-    throw new Error('该用户名已被注册，请换一个');
-  }
-
-  const role = adminCode === ADMIN_CODE ? 'admin' : 'user';
-
-  const result = await tcb.database().collection('users').add({
-    username,
-    password,
-    role,
-    created_at: new Date().toISOString(),
-  });
-
-  if (!result || !result.id) {
-    throw new Error('注册失败');
-  }
-
-  const user = { id: result.id, username, role };
+  const result = await callCloudFunction('register', { username, password, adminCode });
+  const user = result.user;
   const token = btoa(JSON.stringify(user));
   return { token, user };
 }
@@ -44,22 +20,8 @@ export async function login(
   username: string,
   password: string
 ): Promise<AuthResponse> {
-  const { data: users } = await tcb
-    .database()
-    .collection('users')
-    .where({ username, password })
-    .get();
-
-  if (!users || users.length === 0) {
-    throw new Error('用户名或密码错误');
-  }
-
-  const userData = users[0];
-  const user = {
-    id: userData._id,
-    username: userData.username,
-    role: userData.role,
-  };
+  const result = await callCloudFunction('login', { username, password });
+  const user = result.user;
   const token = btoa(JSON.stringify(user));
   return { token, user };
 }
