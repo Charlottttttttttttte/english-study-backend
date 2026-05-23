@@ -54,14 +54,81 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="pt-12 pb-12 min-h-screen flex flex-col items-center justify-center">
+    <div className="pt-12 pb-12 min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+      {/* === 丛林多层背景 === */}
+      <div className="fixed inset-0 z-0" style={{ backgroundColor: '#0a1f14' }} />
+      
       <motion.div
-        className="w-full max-w-sm"
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: 'url(./jungle-bg-layer-1.jpg)', opacity: 0.3 }}
+        animate={{ scale: [1, 1.05, 1] }}
+        transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      
+      <motion.div
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: 'url(./jungle-bg-layer-2.jpg)', opacity: 0.5 }}
+        animate={{ scale: [1, 1.03, 1] }}
+        transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      
+      <div
+        className="fixed inset-0 z-0 bg-cover bg-bottom bg-no-repeat"
+        style={{ backgroundImage: 'url(./jungle-bg-layer-3.jpg)', opacity: 0.7 }}
+      />
+
+      <div
+        className="fixed inset-0 z-0 pointer-events-none"
+        style={{
+          backgroundImage: 'url(./noise-texture.png)',
+          opacity: 0.08,
+          backgroundRepeat: 'repeat',
+        }}
+      />
+
+      {/* === 漂浮的小动物 === */}
+      {[
+        { src: './hidden-butterfly.png', x: '8%', y: '15%', size: 28, delay: 0 },
+        { src: './hidden-frog.png', x: '85%', y: '75%', size: 32, delay: 1.5 },
+        { src: './hidden-monkey.png', x: '75%', y: '12%', size: 36, delay: 0.8 },
+        { src: './hidden-parrot.png', x: '5%', y: '60%', size: 30, delay: 2.2 },
+        { src: './hidden-tiger.png', x: '88%', y: '40%', size: 38, delay: 1.2 },
+      ].map((animal, i) => (
+        <motion.img
+          key={i}
+          src={animal.src}
+          alt=""
+          className="fixed z-0 pointer-events-none"
+          style={{
+            left: animal.x,
+            top: animal.y,
+            width: animal.size,
+            height: animal.size,
+            opacity: 0.65,
+            filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
+          }}
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{
+            opacity: [0, 0.65, 0.65, 0],
+            scale: [0.5, 1, 1, 0.8],
+            y: [0, -8, 8, 0],
+          }}
+          transition={{
+            duration: 8,
+            delay: animal.delay,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+
+      {/* === 登录表单 === */}
+      <motion.div
+        className="w-full max-w-sm relative z-10"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Title */}
         <div className="text-center mb-8">
           <h1 className="font-display text-3xl text-cacao-cream mb-2">
             English Study
@@ -71,9 +138,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Form Card - 更透明，让丛林背景透出来 */}
-        <div className="glass-card p-8 rounded-jumbo" style={{ background: 'rgba(18, 40, 30, 0.55)', backdropFilter: 'blur(8px)' }}>
-          {/* Login/Register Toggle */}
+        <div className="glass-card p-8 rounded-jumbo" style={{ background: 'rgba(18, 40, 30, 0.65)', backdropFilter: 'blur(12px)' }}>
           <div className="flex mb-6 bg-white/5 rounded-full p-1">
             <button
               onClick={() => { setIsLogin(true); setError(''); }}
@@ -112,7 +177,6 @@ export default function LoginPage() {
               />
             </div>
 
-            {/* Admin code input (only for registration) */}
             {!isLogin && (
               <div>
                 <div className="flex items-center justify-between mb-1.5">
@@ -136,7 +200,6 @@ export default function LoginPage() {
               </div>
             )}
 
-            {/* 记住我 */}
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"
