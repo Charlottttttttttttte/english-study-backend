@@ -1,4 +1,4 @@
-const API_URL = 'https://english-study-d5guzlwvs975d1521-1257647061.ap-shanghai.app.tcloudbase.com/api';
+const API_URL = 'https://1435550312-d01jjmjzjpu.in.ap-shanghai.tencentscf.com';
 
 export const ENV = 'english-study-d5guzlwvs975d1521';
 
