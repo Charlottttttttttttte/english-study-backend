@@ -1,4 +1,4 @@
-const API_URL = 'https://1435550312-d01jjmjzjpu.in.ap-shanghai.tencentscf.com';
+const API_URL = 'https://1435550312-d01jjmjzjpu.ap-shanghai.tencentscf.com';
 
 export const ENV = 'english-study-d5guzlwvs975d1521';
 
