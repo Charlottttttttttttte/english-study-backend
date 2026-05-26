@@ -2,11 +2,12 @@
 // 连接 Supabase 数据库
 
 const SUPABASE_URL = 'https://vwrdoszksqvixuxuddcg.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3cmRvc3prc3F2aXh1eHVkZGNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MDY4MzYsImV4cCI6MjA5NTI4MjgzNn0.WFMc7wbFrsV18bn9LyJIXLSkRnOE3ICGbY95m66EDWk';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3cmRvc3prc3F2aXh1eHVkZGNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg0MTYyNzgsImV4cCI6MjA3Mzk5MjI3OH0';
 
-// 简单的 supabase 兼容层
+// 统一调用 Supabase REST API
 async function supabaseRequest(table: string, method: string, body?: any, query?: any) {
   const url = new URL(`${SUPABASE_URL}/rest/v1/${table}`);
+  
   if (query) {
     Object.entries(query).forEach(([k, v]) => {
       url.searchParams.append(k, String(v));
@@ -17,6 +18,7 @@ async function supabaseRequest(table: string, method: string, body?: any, query?
     'apikey': SUPABASE_ANON_KEY,
     'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
     'Content-Type': 'application/json',
+    'Prefer': method === 'POST' ? 'return=representation' : '',
   };
 
   const options: any = { method, headers };
@@ -25,13 +27,22 @@ async function supabaseRequest(table: string, method: string, body?: any, query?
   }
 
   const res = await fetch(url.toString(), options);
+  
   if (!res.ok) {
-    const err = await res.text();
-    throw new Error(err);
+    const errText = await res.text();
+    throw new Error(errText || `HTTP ${res.status}`);
   }
 
-  const data = await res.json();
-  return { data };
+  // 204 No Content 或空响应
+  const text = await res.text();
+  if (!text) return { data: [] };
+  
+  try {
+    const data = JSON.parse(text);
+    return { data };
+  } catch {
+    return { data: [] };
+  }
 }
 
 export const ENV = 'supabase';
@@ -65,5 +76,4 @@ export const tcb = {
   getTempFileURL: () => { throw new Error('使用七牛云链接'); },
 };
 
-// 导出 supabaseRequest 供其他文件使用
 export { supabaseRequest };
