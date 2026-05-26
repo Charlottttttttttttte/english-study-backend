@@ -1,7 +1,7 @@
 // Supabase 客户端
 // 连接 Supabase 数据库
 
-const SUPABASE_URL = 'https://icsnavjjdmeoxlhzhvbj.supabase.co';
+const SUPABASE_URL = 'https://vwrdoszksqvixuxuddcg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imljc25hdm5janltZW94bGh6aHZiaiIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzMzNjY0MjQ2LCJleHAiOjIwNDkyNDAyNDZ9';
 
 // 简单的 supabase 兼容层
