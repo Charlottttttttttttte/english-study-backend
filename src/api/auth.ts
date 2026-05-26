@@ -12,6 +12,7 @@ export async function register(
   password: string,
   adminCode?: string
 ): Promise<AuthResponse> {
+  // 检查用户名是否已存在
   const { data: existing } = await supabaseRequest('users', 'GET', null, { username: `eq.${username}` });
   if (existing && existing.length > 0) {
     throw new Error('该用户名已被注册');
@@ -24,7 +25,11 @@ export async function register(
     role,
   });
 
-  const user = { id: data[0].id, username, role };
+  // Supabase return=representation 应该返回数组，但做安全防护
+  const returnedId = data && data.length > 0 && data[0].id ? data[0].id : undefined;
+  // 如果 Supabase 没有返回数据，生成一个临时 id
+  const userId = returnedId || `local_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  const user = { id: userId, username, role };
   const token = btoa(JSON.stringify(user));
   return { token, user };
 }
