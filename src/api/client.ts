@@ -2,7 +2,7 @@
 // 连接 Supabase 数据库
 
 const SUPABASE_URL = 'https://vwrdoszksqvixuxuddcg.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imljc25hdm5janltZW94bGh6aHZiaiIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzMzNjY0MjQ2LCJleHAiOjIwNDkyNDAyNDZ9';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3cmRvc3prc3F2aXh1eHVkZGNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MDY4MzYsImV4cCI6MjA5NTI4MjgzNn0.WFMc7wbFrsV18bn9LyJIXLSkRnOE3ICGbY95m66EDWk';
 
 // 简单的 supabase 兼容层
 async function supabaseRequest(table: string, method: string, body?: any, query?: any) {
