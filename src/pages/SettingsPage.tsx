@@ -6,6 +6,7 @@ import { tcb } from '../api/client';
 import { isLoggedIn, isAdmin } from '../api/auth';
 
 interface MaterialRecord {
+  id?: string;
   _id?: string;
   day_index: number;
   audio_src: string;
@@ -74,6 +75,7 @@ export default function SettingsPage() {
     setEditForm(null);
   }, []);
 
+  // 读取TXT文件内容（完全免费，浏览器本地读取）
   const readTxtFile = useCallback((file: File, field: 'original' | 'translated') => {
     if (!file || !editForm) return;
     if (!file.name.endsWith('.txt')) {
@@ -114,11 +116,13 @@ export default function SettingsPage() {
           translated_text: editForm.translated_text,
         });
         if (result && result.id) {
-          setMaterials(prev => [...prev, { ...editForm, _id: result.id }]);
+          setMaterials(prev => [...prev, { ...editForm, id: result.id }]);
         }
       } else if (editingIndex !== null && materials[editingIndex]) {
         const doc = materials[editingIndex];
-        await tcb.database().collection('materials').doc(doc._id!).update({
+        const docId = doc.id || doc._id;
+        if (!docId) throw new Error('文档ID不存在');
+        await tcb.database().collection('materials').doc(docId).update({
           audio_src: editForm.audio_src,
           video_src: editForm.video_src,
           title: editForm.title,
@@ -126,7 +130,7 @@ export default function SettingsPage() {
           translated_text: editForm.translated_text,
         });
         const newMaterials = [...materials];
-        newMaterials[editingIndex] = { ...editForm, _id: doc._id };
+        newMaterials[editingIndex] = { ...editForm, id: docId };
         setMaterials(newMaterials);
       }
 
@@ -143,12 +147,13 @@ export default function SettingsPage() {
 
   const handleDelete = useCallback(async (index: number) => {
     const doc = materials[index];
-    if (!doc._id) return;
+    const docId = doc.id || doc._id;
+    if (!docId) return;
     if (!window.confirm(`确定删除 Day ${doc.day_index} 的所有内容？此操作不可恢复！`)) return;
 
     setLoading(true);
     try {
-      await tcb.database().collection('materials').doc(doc._id).remove();
+      await tcb.database().collection('materials').doc(docId).remove();
       setMaterials(prev => prev.filter((_, i) => i !== index));
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
@@ -189,7 +194,7 @@ export default function SettingsPage() {
         <AnimatePresence>
           {materials.map((m, i) => (
             <motion.div
-              key={m._id || m.day_index}
+              key={m.id || m._id || m.day_index}
               className={`glass-card p-5 rounded-jumbo ${isEmpty(m) ? 'border border-red-500/20' : ''}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -216,6 +221,7 @@ export default function SettingsPage() {
                     <input type="text" value={editForm?.title || ''} onChange={(e) => setEditForm(prev => prev ? { ...prev, title: e.target.value } : null)} className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white/90 font-body text-xs" placeholder="例如：调解关系" />
                   </div>
 
+                  {/* 音频 - 粘贴七牛云链接 */}
                   <div>
                     <label className="text-white/70 text-xs font-body mb-1 flex items-center gap-1"><Music size={12} /> 音频链接 (MP3)</label>
                     <input type="text" value={editForm?.audio_src || ''} onChange={(e) => setEditForm(prev => prev ? { ...prev, audio_src: e.target.value } : null)} className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white/90 font-body text-xs" placeholder="粘贴七牛云音频链接..." />
@@ -224,6 +230,7 @@ export default function SettingsPage() {
                     )}
                   </div>
 
+                  {/* 视频 - 粘贴七牛云链接 */}
                   <div>
                     <label className="text-white/70 text-xs font-body mb-1 flex items-center gap-1"><Video size={12} /> 视频链接 (MP4)</label>
                     <input type="text" value={editForm?.video_src || ''} onChange={(e) => setEditForm(prev => prev ? { ...prev, video_src: e.target.value } : null)} className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white/90 font-body text-xs" placeholder="粘贴七牛云视频链接..." />
@@ -232,10 +239,11 @@ export default function SettingsPage() {
                     )}
                   </div>
 
+                  {/* 英文原文 + 免费TXT导入 */}
                   <div>
                     <label className="text-white/70 text-xs font-body mb-1 flex items-center gap-1"><FileText size={12} /> 英文原文 *</label>
                     <label className="inline-flex items-center gap-1 mb-2 text-xs font-body text-cacao-gold/80 hover:text-cacao-gold cursor-pointer transition-colors">
-                      <Upload size={12} /> 从 .txt 文件导入
+                      <Upload size={12} /> 从 .txt 文件导入（免费）
                       <input
                         type="file"
                         accept=".txt"
@@ -246,10 +254,11 @@ export default function SettingsPage() {
                     <textarea value={editForm?.original_text || ''} onChange={(e) => setEditForm(prev => prev ? { ...prev, original_text: e.target.value } : null)} rows={4} className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white/90 font-body text-xs resize-none" placeholder="输入英文原文，或上方导入 .txt 文件..." />
                   </div>
 
+                  {/* 中文翻译 + 免费TXT导入 */}
                   <div>
                     <label className="text-white/70 text-xs font-body mb-1 flex items-center gap-1"><FileText size={12} /> 中文翻译</label>
                     <label className="inline-flex items-center gap-1 mb-2 text-xs font-body text-cacao-gold/80 hover:text-cacao-gold cursor-pointer transition-colors">
-                      <Upload size={12} /> 从 .txt 文件导入
+                      <Upload size={12} /> 从 .txt 文件导入（免费）
                       <input
                         type="file"
                         accept=".txt"
